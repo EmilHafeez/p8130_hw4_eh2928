@@ -37,8 +37,10 @@ We assume that the samples are drawn independently from the underlying populatio
 
 Let \(n\) be the total number of observations
 
-Let \(\bar{y}\) be the mean from the $i^{th}$ group
+Now, we can write that the total variation is equal to \(\sum_{i=1}^{n}(y_i - \overline{y})^2\), giving the sum of squares for these data where \(y_i\) is the ith data point, and where \(\bar{y}\) is the estimate of the mean. Now, more specifically, 
 
-Let \(\bar{y_i}\) be the grand mean, such that \(\overline{\bar{y}}=\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_{i}} y_{i j}}{n}\)
+Let \(\bar{y}\) be the mean from each of the  the $i^{th}$ group where $i$ = 1,2,3,...\(k\) is the number of groups and let \(\overline{\bar{y}}\) be the grand mean, such that \(\overline{\bar{y}}=\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_{i}} y_{i j}}{n}\). 
 
-Let \(\overline{\bar{y}}\)
+
+
+
