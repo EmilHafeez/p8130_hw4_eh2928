@@ -1,0 +1,44 @@
+---
+title: "Assignment 4"
+author: "Emil Hafeez (eh2928)"
+date: "10/28/2020"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library("animation")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom")) #setup and establish the colors schemes for plits
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_colour_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+```
+```{r}
+knee_df =
+  read_csv(
+      "./data/Knee.csv") #load in df
+```
+
+# Problem 1
+
+In the context of ANOVA models, prove the partitioning of the total variability (sum of squares).
+
+\begin{equation}
+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\overline{\bar{y}}\right)^{2}=\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}_{l}\right)^{2}+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(\bar{y}_{i}-\overline{\bar{y}}\right)^{2}
+\end{equation}
+
+We assume that the samples are drawn independently from the underlying populations, that the distributions of the error terms are normal, and that the variances of the k populations are equal (and thus that the variance of the outcome does not depend on the sample). 
+
+Let \(n\) be the total number of observations
+
+Let \(\bar{y}\) be the mean from the $i^{th}$ group
+
+Let \(\bar{y_i}\) be the grand mean, such that \(\overline{\bar{y}}=\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_{i}} y_{i j}}{n}\)
+
+Let \(\overline{\bar{y}}\)
