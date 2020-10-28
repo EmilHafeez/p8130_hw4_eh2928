@@ -5,7 +5,7 @@ date: "10/28/2020"
 output: pdf_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library("animation")
@@ -19,13 +19,13 @@ options(
 scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
-```{r}
+```{r, include = F}
 knee_df =
   read_csv(
       "./data/Knee.csv") #load in df
 ```
 
-# Problem 1
+# Problem 1 (5p)
 
 In the context of ANOVA models, prove the partitioning of the total variability (sum of squares).
 
@@ -41,6 +41,91 @@ Now, we can write that the total variation is equal to \(\sum_{i=1}^{n}(y_i - \o
 
 Let \(\bar{y}\) be the mean from each of the  the $i^{th}$ group where $i$ = 1,2,3,...\(k\) is the number of groups and let \(\overline{\bar{y}}\) be the grand mean, such that \(\overline{\bar{y}}=\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_{i}} y_{i j}}{n}\). 
 
+....Continue
 
+
+
+
+# Problem 2 
+
+## Part a)
+Generate descriptive statistics for each group and comment on the differences observed. (4p)
+
+Descriptives: let's do mean for each group and sd, range, and median for each group, and comment.
+
+```{r, include = F}
+knee_df %>% 
+  pivot_longer(
+  Below:Above,
+  names_to = "group",
+      values_to = "days_to_recover"
+  ) %>% 
+    group_by(group) %>% 
+  mutate(
+    mean = mean(days_to_recover, na.rm = TRUE),
+    median = median(days_to_recover, na.rm = TRUE),
+    sd = sd(days_to_recover, na.rm = TRUE)
+  )
+
+knee_tidied_df =
+knee_df %>% 
+  pivot_longer(
+  Below:Above,
+  names_to = "group",
+      values_to = "days_to_recover"
+  ) %>% 
+    group_by(group) %>% 
+  mutate(
+    mean = mean(days_to_recover, na.rm = TRUE),
+    median = median(days_to_recover, na.rm = TRUE),
+    sd = sd(days_to_recover, na.rm = TRUE)
+  )
+```
+Regarding participants' physical status before therapy, the "Above Average" group had a mean of 23.57 days (standard deviation = 4.20), and a median of 22 days.  The "Average" group had a mean of 33 days to recover (standard deviation = 3.92 days), and a median of 32 days. The "Below Average" group had a mean of 38 days to recover (standard deviation = 5.478 days) and a median of 40 days to recover. Thus, it appears that worse prior physical status is associated with more days to recovery. Interestingly, it also appears that a worse prior physical status seems to have higher dispersion (as per the SD, as well). Finally, it appears visually that only the "Below" group had left skew, whereas the other two groups had right skew. This can be explored visually, as below.
+
+```{r, echo = F, warning = F}
+knee_tidied_df %>% 
+  arrange(group, desc(group)) %>% 
+  ggplot(aes(x = group, y = days_to_recover)) +
+  geom_boxplot() +
+  stat_summary(fun.y = mean, geom="point", shape=20, size=5, color="red", fill="red") +
+  labs(
+    title = "Rehabilitation Days to Recovery By Prior Physical Status",
+    x = "Days to Recover",
+    y = "Prior Physical Status Group",
+    caption = "Figure 1, Biostatistics P8130 Assignment 4")
+```
+
+## Part b)
+
+Let \(\alpha\) = 0.01.
+
+\(H_0 = \)
+
+\(H_A = \) 
+
+\begin{table}[]
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Source & Sum of Square (SS) & Degrees of Freedom (df) & Mean Sum of Square & F-Statistic \\ \hline
+Between & Between SS & k-1 & Between SS / (k-1) & F = \(\frac{(Mean Between SS / k-1)}{(Within SS / (n-k)}\) \\ \hline
+Within & Within SS & n-k & Within SS / (n-k) &  \\ \hline
+Total & Between SS + Within SS & n-1 &  &  \\ \hline
+\end{tabular}
+\end{table}
+
+\(F = \frac{(Mean Between SS / k-1)}{(Within SS / (n-k)}\) 
+\(F_{critical} = \)  
+
+
+Perform an ANOVA test: are the mean insulin levels significantly different?
+Need to mention the independent variable as a factor; o/w will be considered continuous
+Function lm() is broader, including linear regression models
+
+```{r, include = F}
+res <- lm(days_to_recover~factor(group), data = knee_tidied_df)
+res
+anova(res)
+```
 
 
