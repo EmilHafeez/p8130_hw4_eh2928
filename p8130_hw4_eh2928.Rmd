@@ -28,23 +28,64 @@ knee_df =
 
 # Problem 1 (5p)
 
-In the context of ANOVA models, prove the partitioning of the total variability (sum of squares).
+In the context of one-way ANOVA models, prove the partitioning of the total variability (sum of squares).
 
 \begin{equation}
-\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\overline{\bar{y}}\right)^{2}=\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}_{l}\right)^{2}+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(\bar{y}_{i}-\overline{\bar{y}}\right)^{2}
+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\overline{\bar{y}}\right)^{2}=\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}_{i}\right)^{2}+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(\bar{y}_{i}-\overline{\bar{y}}\right)^{2}
 \end{equation}
+
+
+We use a one-way ANOVA model specified as: 
+
+
+\(y_{ij} = \mu + \alpha_i + e_{ij}, i = 1,2,...k, j = 1,2,... n_i\), 
+
+where \(\mu\) is a constant representing the underlying mean of all groups taken together (the grand mean), \(\alpha_i\) is a constant for the difference between the i-th group mean and the grand mean, and \(e_{ij}\) represent the normally distribution error terms.  
 
 We assume that the samples are drawn independently from the underlying populations, that the distributions of the error terms are normal, and that the variances of the k populations are equal (and thus that the variance of the outcome does not depend on the sample). 
 
 Let \(n\) be the total number of observations
 
-Now, we can write that the total variation is equal to \(\sum_{i=1}^{n}(y_i - \overline{y})^2\), giving the sum of squares for these data where \(y_i\) is the ith data point, and where \(\bar{y}\) is the estimate of the mean. Now, more specifically, 
+Let's write the total variability as: 
+
+$$ y_{i j}-\bar{y}$$
+
+Now, we can also write that the total variation is equal to \(\sum_{i=1}^{n}(y_i - \overline{y})^2\), giving the sum of squares for these data where \(y_i\) is the ith data point, and where \(\bar{y}\) is the estimate of the mean. Now, more specifically, 
 
 Let \(\bar{y}\) be the mean from each of the  the $i^{th}$ group where $i$ = 1,2,3,...\(k\) is the number of groups and let \(\overline{\bar{y}}\) be the grand mean, such that \(\overline{\bar{y}}=\frac{\sum_{i=1}^{k} \sum_{j=1}^{n_{i}} y_{i j}}{n}\). 
 
-....Continue
+
+Now, we square the variability term and simplify the summation signs and find:
+
+\(\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}\right)^{2} = \)
+
+$$
+\begin{array}{l}
+=\sum_{i=1}^{n}\left(\left(\hat{y}_{i}-\bar{y}\right)^{2}+2 \hat{\varepsilon}_{i}\left(\hat{y}_{i}-\bar{y}\right)+\hat{\varepsilon}_{i}^{2}\right) \\
+=\sum_{i=1}^{n}\left(\hat{y}_{i}-\bar{y}\right)^{2}+\sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2}+2 \sum_{i=1}^{n} \hat{\varepsilon}_{i}\left(\hat{y}_{i}-\bar{y}\right) \\
+=\sum_{i=1}^{n}\left(\hat{y}_{i}-\bar{y}\right)^{2}+\sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2}+2 \sum_{i=1}^{n} \hat{\varepsilon}_{i}\left(\hat{\beta}_{0}+\hat{\beta}_{1} x_{i 1}+\cdots+\hat{\beta}_{p} x_{i p}-\bar{y}\right) \\
+=\sum_{i=1}^{n}\left(\hat{y}_{i}-\bar{y}\right)^{2}+\sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2}+2\left(\hat{\beta}_{0}-\bar{y}\right) \sum_{i=1}^{n} \hat{\varepsilon}_{i}+2 \hat{\beta}_{1} \underbrace{\sum_{i=1}^{n} \hat{\varepsilon}_{i} x_{i 1}}_{0}+\cdots+2 \hat{\beta}_{p} \underbrace{\sum_{i=1}^{n} \hat{\varepsilon}_{i} x_{i p}}_{0} \\
+=\sum_{i=1}^{n}\left(\hat{y}_{i}-\bar{y}\right)^{2}+\sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2}
+\end{array}
+$$
+where we can assume those terms are zero based on the normal distribution of those error terms.
 
 
+So, \(=\sum_{i=1}^{n}\left(\hat{y}_{i}-\bar{y}\right)^{2}+\sum_{i=1}^{n} \hat{\varepsilon}_{i}^{2} = ESS+RSS\),
+
+Thus,
+\(\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}\right)^{2}= ESS + RSS \) for each individual of each group, such that
+
+
+$$
+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}\right)^{2}=\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}_{i}\right)^{2}+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(\bar{y}_{i}-\bar{y}\right)^{2}
+$$
+
+which proves
+
+\begin{equation}
+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\overline{\bar{y}}\right)^{2}=\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(y_{i j}-\bar{y}_{i}\right)^{2}+\sum_{i=1}^{k} \sum_{j=1}^{n_{i}}\left(\bar{y}_{i}-\overline{\bar{y}}\right)^{2}
+\end{equation}
 
 
 # Problem 2 
