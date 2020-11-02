@@ -50,9 +50,6 @@ Let \(\bar{y}\) be the mean from each of the  the $i^{th}$ group where $i$ = 1,2
 # Problem 2 
 
 ## Part a)
-Generate descriptive statistics for each group and comment on the differences observed. (4p)
-
-Descriptives: let's do mean for each group and sd, range, and median for each group, and comment.
 
 ```{r, include = F}
 knee_df %>% 
@@ -82,7 +79,12 @@ knee_df %>%
     sd = sd(days_to_recover, na.rm = TRUE)
   )
 ```
-Regarding participants' physical status before therapy, the "Above Average" group had a mean of 23.57 days (standard deviation = 4.20), and a median of 22 days.  The "Average" group had a mean of 33 days to recover (standard deviation = 3.92 days), and a median of 32 days. The "Below Average" group had a mean of 38 days to recover (standard deviation = 5.478 days) and a median of 40 days to recover. Thus, it appears that worse prior physical status is associated with more days to recovery. Interestingly, it also appears that a worse prior physical status seems to have higher dispersion (as per the SD, as well). Finally, it appears visually that only the "Below" group had left skew, whereas the other two groups had right skew. This can be explored visually, as below.
+
+```{r summary}
+summary(knee_df)
+```
+
+Regarding participants' physical status before therapy, the "Above Average" group had a mean of 23.57 days (standard deviation = 4.20), and a median of 22 days.  The "Average" group had a mean of 33 days to recover (standard deviation = 3.92 days), and a median of 32 days. The "Below Average" group had a mean of 38 days to recover (standard deviation = 5.478 days) and a median of 40 days to recover. Thus, it appears that worse prior physical status is associated with more days to recovery. Interestingly, it also appears that a worse prior physical status seems to have higher dispersion (as per the SD, as well). This can be explored visually, as below. 
 
 ```{r, echo = F, warning = F}
 knee_tidied_df %>% 
@@ -114,6 +116,16 @@ Within & Within SS & n-k & Within SS / (n-k) &  \\ \hline
 Total & Between SS + Within SS & n-1 &  &  \\ \hline
 \end{tabular}
 
+
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+Source & Sum of Square (SS) & Degrees of Freedom (df) & Mean Sum of Square & F-Statistic \\ \hline
+Between & 795.25 & 2 & 397.62 & F = \(\frac{(397.62)}{(19.28)}\) \\ \hline
+Within & 453.71 & 22 & 20.62  &  \\ \hline
+Total & 1248.96 & 24 &  &  \\ \hline
+\end{tabular}
+
+
 ```{r, include = F}
 res <- lm(days_to_recover~factor(group), data = knee_tidied_df)
 res
@@ -125,24 +137,54 @@ summary(res1)
 
 \(F = \frac{(Mean Between SS / k-1)}{(Within SS / (n-k)}\) = 19.28
 
-\(F_{critical} = \) `qf(0.95, 2, 22)` = 3.443357
+\(F_{critical} = \) \(F_{k-1,n-k,1-\alpha}\)
 
-Seeing as the decision rule is that we reject the null hypothesis if \(F > F_{k-1, n-k, 1-\alpha}\) and fail to reject the null hypothesis if \(F \leq F_{k-1, n-k, 1-\alpha}\), we find evidence to reject the null hypothesis and conclude that there is at least one group mean that is not equal to the other group means. In context, we find evidence to conclude that there is at least one difference in group mean recovery days to recovery until successful rehabilitation among the Below, Average, and Above Average prior physical fitness status. 
+`qf(0.99, 2, 22)` = 5.719022
+
+Seeing as the decision rule is that we reject the null hypothesis if \(F > F_{k-1, n-k, 1-\alpha}\) and fail to reject the null hypothesis if \(F \leq F_{k-1, n-k, 1-\alpha}\), we find evidence to reject the null hypothesis and conclude that there is at least one group mean that is not equal to the other group means. In context, we find evidence to conclude that there is at least one difference in group mean days to recovery until successful rehabilitation among the Below, Average, and Above Average prior physical fitness status. 
 
 
 ## Part c)
 
 Seeing as we find evidence to reject the null hypothesis in the omnibus test, we can proceed to implementing a pairwise comparison method. We opt to perform each of three post-hoc comparisons, including the Bonferroni comparison, Tukey, and Dunnett.
 
-Dear Dr. Lebron James,
+```{r, include = F}
+knee_tidied_df =
+  knee_tidied_df %>% 
+  mutate(group = as.factor(group)) %>% 
+  mutate(group = relevel(as.factor(group), ref = "Below"))
+res <- lm(days_to_recover~factor(group), data = knee_tidied_df)
+res
+anova(res)
+res1<-aov(days_to_recover~factor(group), data=knee_tidied_df)
+summary(res1)
+```
 
-I am writing to you to summarize the results of my analysis regarding your rehabilitation study. In order to investigate whether there are differences between the mean rehabilitation days to recovery time between the specified Below Average prior physical status, the Average prior physical status, and Above Average physical status groups, we implemented an ANOVA model and found evidence to reject the null hypothesis and conclude there is at least one difference between the group means \(F = \frac{(Mean Between SS / k-1)}{(Within SS / (n-k)} = 19.28\) and \(F_{critical} = 3.443357 \). Then, we implemented pairwise comparisons using several different methods, and found converging evidence in order to support a significant difference between the mean recovery time between the Average and Above Average group means, and between the Below Average and Above Average group means.
 
-# Problem 2 
+```{r post-hoc method comparisons}
+pairwise.t.test(knee_tidied_df$days_to_recover, knee_tidied_df$group, p.adj='bonferroni')
+
+# For Tukey, we need to use another function with an object created by aov()
+Tukey_comp<-TukeyHSD(res1)
+Tukey_comp
+plot(Tukey_comp)
+# Dunnett's test: multiple comparisons with a specified control (here group #1)
+summary(glht(res1), linfct=mcp(Group="Dunnett"))
+```
+
+Here we see our results reported. Summarily, we find that each of the 3 methods we implement (Bonferroni, Tukey, Dunnett) each all individually find that there are significant differences between the mean recovery time between the Average and Above Average group means, and between the Below Average and Above Average group means. The Bonferroni is the most conservative method (and the least powerful), whereas Tukey's is less conservative than Bonferroni, and Dunnett's primarily focuses on comparisons using the declared reference group of ("Below").
+
+
+## Part d)
+Dear Dr. Rehab Hafeez,
+
+I am writing to you to summarize the results of my analysis regarding your rehabilitation study. In order to investigate whether there are differences between the mean rehabilitation days to recovery time between the specified Below Average prior physical status, the Average prior physical status, and Above Average physical status groups, we implemented an ANOVA model and found evidence to reject the null hypothesis and conclude there is at least one difference between the group means \(F = \frac{(Mean Between SS / k-1)}{(Within SS / (n-k)} = 19.28\) and \(F_{critical} = 5.719022 \). Then, we implemented pairwise comparisons using several different methods (Bonferroni, Tukey, and Dunnett's), and found converging evidence in order to support a significant difference between the mean recovery time between the Average and Above Average group means, and between the Below Average and Above Average group means. Best of luck on your rehabilitation work.
+
+# Problem 3 
 
 ## Part a)
 
-We consider a situation in which we are examining proportions, not means. McNemar's test for binomial proportions is not appropriate given we are not utilizing paired data, and one- or two-sample tests for binomial proportions are also not appropriate considering the number of categories we wish to compare. A Fisher's Exact Test is not feasible because this is not a 2x2 table.
+We consider a situation in which we are examining proportions, not means, which already limits our initial test choices. Further, McNemar's test for binomial proportions is not appropriate given we are not utilizing paired data, and one- or two-sample tests for binomial proportions are also not appropriate considering the number of categories we wish to compare. A Fisher's Exact Test is not wise because this is not a 2x2 table.
 
 Finally, considering that we are interested in testing whether distribution of swelling status is the same across the levels of the intervention group (vaccine / placebo), we opt to use a Chi-Squared test of homogeneity. 
 
@@ -159,18 +201,15 @@ chisq.test(vaccine_df)
 
 The table required to calculate the Chi Squared value is as follows.
 
-
-
 \begin{tabular}{|l|l|l|l|l|}
 \hline & \text { Major [Expected] } & \text { Minor [Expected] } & \text { No Swelling [Expected] } & \text { Total } \\
-\hline \text { Vaccine } & 54 [33.33] & 42 [40.52] & 134 [171.14] & 230 \\
+\hline \text { Vaccine } & 54 [38.33] & 42 [40.52] & 134 [151.14] & 230 \\
 \hline \text { Placebo } & 16 [31.66] & 32 [33.48] & 142 [124.85] & 190 \\
 \hline \text { Total } & 70 & 74 & 276 & 142 \\
 \hline
 \end{tabular}
 
-using: 
-```{r, echo = T, warning = F}
+```{r, include = F}
 chisq.test(vaccine_df)$expected 
 ```
 
@@ -185,7 +224,7 @@ The \(H_0\) is that not all proportions are equal.
 
 The decision rule is that, at the 0.05 level, \(\chi^2 > \chi^2_{df,\alpha}\) where the degrees of freedom are given by \(df = (r-1)(3-1) = 2\) and the alpha has been set at 0.05. We fail to reject the null hypothesis if \(\chi^2 \leq \chi^2_{df,\alpha}\) . 
 
-The test statistic is given by \(\chi^{2}=\sum_{i=1}^{2} \sum_{j=1}^{3} \frac{\left(O_{i j}-E_{i j}\right)^{2}}{E_{i j}}\) = \(26.082\). 
+The test statistic is given by \(\chi^{2}=\sum_{i=1}^{2} \sum_{j=1}^{3} \frac{\left(O_{i j}-E_{i j}\right)^{2}}{E_{i j}}\) = \(18.571\). 
 
 The critical value, as mentioned, is given by \(\chi^2_{(2-1)*(4-1), 0.95)}\) computed by `qchisq(0.95,2)` = 5.991465. 
 
